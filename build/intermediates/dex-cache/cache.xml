@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/exploded-aar/com.android.support/support-v13/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="a809555a2599054c3dcd1bf82b089315ac3a11df">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v13-23.3.0_43bc2e7a0a19918b7af0073989a6e3ebb23f75bd/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/exploded-aar/com.android.support/cardview-v7/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="82ce13fd19cdfde0e392f03c27edeba8d4333648">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-cardview-v7-23.3.0_102901a4a847ff001a3b7a722cae8fa16f62d687/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="8a034dd16c0dfd75fe86c52c2cd581592acc684a">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v4-23.3.0_909fd9e050f4244ac3aa7ddbba5dd0f7e4d30fbc/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="bc5da69936cc2df302e795b28fc048a260e19e1b">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_f6103ee735e9fe49885da795cc93394cfe18bcfa/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/exploded-aar/com.davemorrissey.labs/subsampling-scale-image-view/3.5.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="fa7c91f0a2b43f8d9fa001e3d04e2d600f24cc68">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/com.davemorrissey.labs-subsampling-scale-image-view-3.5.0_e78f829e0760fbf995c86aa491d939f92a5e8654/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="debf30ce0a7560396b6235edef77e447006454c2">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-recyclerview-v7-23.3.0_6129e9ab80aab8a93f40a6648fe550a8266fe6a9/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/exploded-aar/com.android.support/support-v4/23.3.0/jars/libs/internal_impl-23.3.0.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="4da5a4d697d32497c6f85567a5112e62fdfd0676">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-23.3.0_bed2c0559ce1361c9c7fb8570e2a5a10e00cc4fa/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="15942eb75ffe4b903dadaa822e0e66cef6321cdd">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_27027541701b3955e871e7d4a029503f3ef82fb9/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/exploded-aar/com.android.support/design/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="f0001e71cea6ae432a00021c6f727f5ef0f3d27e">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-design-23.3.0_69b92edac37b7b0b877832b0d9aac6fab597ae6a/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.3.0/support-annotations-23.3.0.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="db7791d75a07fef9844d06236c1c59ba7bf6997c">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-23.3.0_ec0d566aece6ca51a08d8f24c7b417a590ace404/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/.gradle/caches/modules-2/files-2.1/com.squareup.picasso/picasso/2.5.2/7446d06ec8d4f7ffcc53f1da37c95f200dcb9387/picasso-2.5.2.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="7446d06ec8d4f7ffcc53f1da37c95f200dcb9387">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/picasso-2.5.2_fd5a8ed336284d257fb08388e899a3a681147f0e/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="23be6993826b8fd88bbc8d14928bb3b8960d3d4e">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-animated-vector-drawable-23.3.0_7fe852e63cfaaa6d8b69423cfbaf795ee63f5f8d/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="a0b5d60246cd9d4f3f2443611b3b4c25265840b5">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-vector-drawable-23.3.0_586ceb7922b0f2d71cc9ffc4c1702a0ffa219000/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.3.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="1b8e03daaa43fb0a4cd57e378167c2fd70454c1e">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-appcompat-v7-23.3.0_a3216b0b03e2a196c9537a1eadad6ce85e1d02cf/classes.dex" />
+    </item>
+    <item
+        jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/exploded-aar/com.android.support/support-v13/23.3.0/jars/libs/internal_impl-23.3.0.jar"
+        jumboMode="true"
+        revision="23.0.2"
+        sha1="8813bdcf7583107c4873150075d17c8072ec50cf">
+        <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-23.3.0_f06d7e0e39f37ac92668bdd91695f76c1bfc4736/classes.dex" />
+    </item>
+
+</items>
