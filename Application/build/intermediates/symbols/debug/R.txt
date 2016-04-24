@@ -601,9 +601,8 @@ int drawable ic_action_info 0x7f02004d
 int drawable ic_launcher 0x7f02004e
 int drawable loading 0x7f02004f
 int drawable nexusae0_cc 0x7f020050
-int drawable notification_template_icon_bg 0x7f020053
+int drawable notification_template_icon_bg 0x7f020052
 int drawable switchcamera 0x7f020051
-int drawable tile 0x7f020052
 int id action0 0x7f0b0079
 int id action_bar 0x7f0b005a
 int id action_bar_activity_content 0x7f0b0000

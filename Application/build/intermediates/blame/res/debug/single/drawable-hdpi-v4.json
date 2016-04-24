@@ -84,10 +84,6 @@
         "source": "/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.3.0/res/drawable-hdpi-v4/abc_btn_rating_star_off_mtrl_alpha.png"
     },
     {
-        "merged": "/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/res/merged/debug/drawable-hdpi-v4/tile.9.png",
-        "source": "/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/src/main/res/drawable-hdpi/tile.9.png"
-    },
-    {
         "merged": "/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/res/merged/debug/drawable-hdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png",
         "source": "/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.3.0/res/drawable-hdpi-v4/abc_textfield_search_activated_mtrl_alpha.9.png"
     },
