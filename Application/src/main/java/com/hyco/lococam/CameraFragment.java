@@ -1,18 +1,3 @@
-/*
- * Copyright 2014 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package com.hyco.lococam;
 
@@ -90,28 +75,20 @@ public class CameraFragment extends Fragment
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
-
     private static final String TAG = "CameraFragment";
-
 
     private static final int STATE_PREVIEW = 0;
 
-
     private static final int STATE_WAITING_LOCK = 1;
-
 
     private static final int STATE_WAITING_PRECAPTURE = 2;
 
-
     private static final int STATE_WAITING_NON_PRECAPTURE = 3;
-
 
     private static final int STATE_PICTURE_TAKEN = 4;
 
-
     private static final int MAX_PREVIEW_WIDTH = 1920;
-
-
+    
     private static final int MAX_PREVIEW_HEIGHT = 1080;
 
 
@@ -143,17 +120,13 @@ public class CameraFragment extends Fragment
 
     private String filename;
 
-
     private String mCameraId;
 
     private AutoFitTextureView mTextureView;
 
-
     private CameraCaptureSession mCaptureSession;
 
-
     private CameraDevice mCameraDevice;
-
 
     private Size mPreviewSize;
 
@@ -195,14 +168,11 @@ public class CameraFragment extends Fragment
 
     private HandlerThread mBackgroundThread;
 
-
     private Handler mBackgroundHandler;
-
 
     private ImageReader mImageReader;
 
     private File mFile;
-
 
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
@@ -217,14 +187,11 @@ public class CameraFragment extends Fragment
 
     private CaptureRequest.Builder mPreviewRequestBuilder;
 
-
     private CaptureRequest mPreviewRequest;
 
     private int mState = STATE_PREVIEW;
 
-
     private Semaphore mCameraOpenCloseLock = new Semaphore(1);
-
 
     private boolean mFlashSupported;
 
@@ -293,11 +260,6 @@ public class CameraFragment extends Fragment
 
     };
 
-    /**
-     * Shows a {@link Toast} on the UI thread.
-     *
-     * @param text The message to show
-     */
     private void showToast(final String text) {
         final Activity activity = getActivity();
         if (activity != null) {
@@ -310,22 +272,6 @@ public class CameraFragment extends Fragment
         }
     }
 
-    /**
-     * Given {@code choices} of {@code Size}s supported by a camera, choose the smallest one that
-     * is at least as large as the respective texture view size, and that is at most as large as the
-     * respective max size, and whose aspect ratio matches with the specified value. If such size
-     * doesn't exist, choose the largest one that is at most as large as the respective max size,
-     * and whose aspect ratio matches with the specified value.
-     *
-     * @param choices           The list of sizes that the camera supports for the intended output
-     *                          class
-     * @param textureViewWidth  The width of the texture view relative to sensor coordinate
-     * @param textureViewHeight The height of the texture view relative to sensor coordinate
-     * @param maxWidth          The maximum width that can be chosen
-     * @param maxHeight         The maximum height that can be chosen
-     * @param aspectRatio       The aspect ratio
-     * @return The optimal {@code Size}, or an arbitrary one if none were big enough
-     */
     private static Size chooseOptimalSize(Size[] choices, int textureViewWidth,
                                           int textureViewHeight, int maxWidth, int maxHeight, Size aspectRatio) {
 
@@ -533,9 +479,7 @@ public class CameraFragment extends Fragment
         }
     }
 
-    /**
-     * Opens the camera specified by {@link CameraFragment#mCameraId}.
-     */
+
     private void openCamera(int width, int height) {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -558,9 +502,7 @@ public class CameraFragment extends Fragment
         }
     }
 
-    /**
-     * Closes the current {@link CameraDevice}.
-     */
+
     private void closeCamera() {
         try {
             mCameraOpenCloseLock.acquire();
@@ -583,18 +525,13 @@ public class CameraFragment extends Fragment
         }
     }
 
-    /**
-     * Starts a background thread and its {@link Handler}.
-     */
+
     private void startBackgroundThread() {
         mBackgroundThread = new HandlerThread("CameraBackground");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
     }
 
-    /**
-     * Stops the background thread and its {@link Handler}.
-     */
     private void stopBackgroundThread() {
         mBackgroundThread.quitSafely();
         try {
@@ -606,9 +543,6 @@ public class CameraFragment extends Fragment
         }
     }
 
-    /**
-     * Creates a new {@link CameraCaptureSession} for camera preview.
-     */
     private void createCameraPreviewSession() {
         try {
             SurfaceTexture texture = mTextureView.getSurfaceTexture();
@@ -667,14 +601,6 @@ public class CameraFragment extends Fragment
         }
     }
 
-    /**
-     * Configures the necessary {@link android.graphics.Matrix} transformation to `mTextureView`.
-     * This method should be called after the camera preview size is determined in
-     * setUpCameraOutputs and also the size of `mTextureView` is fixed.
-     *
-     * @param viewWidth  The width of `mTextureView`
-     * @param viewHeight The height of `mTextureView`
-     */
     private void configureTransform(int viewWidth, int viewHeight) {
         Activity activity = getActivity();
         if (null == mTextureView || null == mPreviewSize || null == activity) {
@@ -703,14 +629,11 @@ public class CameraFragment extends Fragment
 
     }
 
-
     private void takePicture() {
         lockFocus();
     }
 
-
     private void lockFocus() {
-
 
         try {
             mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
