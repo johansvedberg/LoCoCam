@@ -204,8 +204,6 @@
     <dimen name="abc_text_size_subtitle_material_toolbar">16dp</dimen>
     <dimen name="abc_text_size_title_material">20sp</dimen>
     <dimen name="abc_text_size_title_material_toolbar">20dp</dimen>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="cardview_compat_inset_shadow">1dp</dimen>
     <dimen name="cardview_default_elevation">2dp</dimen>
     <dimen name="cardview_default_radius">2dp</dimen>
@@ -243,19 +241,12 @@
     <item format="float" name="highlight_alpha_material_colored" type="dimen">0.26</item>
     <item format="float" name="highlight_alpha_material_dark" type="dimen">0.20</item>
     <item format="float" name="highlight_alpha_material_light" type="dimen">0.12</item>
-    <dimen name="horizontal_page_margin">@dimen/margin_medium</dimen>
     <dimen name="item_touch_helper_max_drag_scroll_per_frame">20dp</dimen>
     <dimen name="item_touch_helper_swipe_escape_max_velocity">800dp</dimen>
     <dimen name="item_touch_helper_swipe_escape_velocity">120dp</dimen>
-    <dimen name="margin_huge">64dp</dimen>
-    <dimen name="margin_large">32dp</dimen>
-    <dimen name="margin_medium">16dp</dimen>
-    <dimen name="margin_small">8dp</dimen>
-    <dimen name="margin_tiny">4dp</dimen>
     <dimen name="notification_large_icon_height">64dp</dimen>
     <dimen name="notification_large_icon_width">64dp</dimen>
     <dimen name="notification_subtext_size">12dp</dimen>
-    <dimen name="vertical_page_margin">@dimen/margin_medium</dimen>
     <drawable name="notification_template_icon_bg">#3333B5E5</drawable>
     <item name="action_bar_activity_content" type="id"/>
     <item name="action_bar_spinner" type="id"/>
@@ -302,16 +293,6 @@
     <string name="description_info">Info</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="intro_message">
-        
-        
-            
-            This sample demonstrates the basic use of Camera2 API. Check the source code to see how
-            you can display camera preview and take pictures.
-            
-        
-        
-    </string>
     <string name="picture">Picture</string>
     <string name="request_permission">This sample needs camera permission.</string>
     <string name="status_bar_notification_info_overflow">999+</string>
@@ -324,7 +305,6 @@
         <item name="android:windowEnterAnimation">@anim/design_bottom_sheet_slide_in</item>
         <item name="android:windowExitAnimation">@anim/design_bottom_sheet_slide_out</item>
     </style>
-    <style name="AppTheme" parent="Theme.Sample"/>
     <style name="Base.AlertDialog.AppCompat" parent="android:Widget">
         <item name="android:layout">@layout/abc_alert_dialog_material</item>
         <item name="listLayout">@layout/abc_select_dialog_material</item>
@@ -1578,7 +1558,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    <style name="Theme.Base" parent="android:Theme.Light"/>
     <style name="Theme.Design" parent="Theme.AppCompat">
         <item name="textColorError">@color/design_textinput_error_color_dark</item>
     </style>
@@ -1603,13 +1582,11 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    <style name="Theme.Sample" parent="Theme.Base"/>
     <style name="ThemeOverlay.AppCompat" parent="Base.ThemeOverlay.AppCompat"/>
     <style name="ThemeOverlay.AppCompat.ActionBar" parent="Base.ThemeOverlay.AppCompat.ActionBar"/>
     <style name="ThemeOverlay.AppCompat.Dark" parent="Base.ThemeOverlay.AppCompat.Dark"/>
     <style name="ThemeOverlay.AppCompat.Dark.ActionBar" parent="Base.ThemeOverlay.AppCompat.Dark.ActionBar"/>
     <style name="ThemeOverlay.AppCompat.Light" parent="Base.ThemeOverlay.AppCompat.Light"/>
-    <style name="Widget"/>
     <style name="Widget.AppCompat.ActionBar" parent="Base.Widget.AppCompat.ActionBar">
     </style>
     <style name="Widget.AppCompat.ActionBar.Solid" parent="Base.Widget.AppCompat.ActionBar.Solid">
@@ -1759,15 +1736,5 @@
         <item name="errorTextAppearance">@style/TextAppearance.Design.Error</item>
         <item name="counterTextAppearance">@style/TextAppearance.Design.Counter</item>
         <item name="counterOverflowTextAppearance">@style/TextAppearance.Design.Counter.Overflow</item>
-    </style>
-    <style name="Widget.SampleMessage">
-        <item name="android:textAppearance">?android:textAppearanceMedium</item>
-        <item name="android:lineSpacingMultiplier">1.1</item>
-    </style>
-    <style name="Widget.SampleMessageTile">
-        <item name="android:background">@drawable/tile</item>
-        <item name="android:shadowColor">#7F000000</item>
-        <item name="android:shadowDy">-3.5</item>
-        <item name="android:shadowRadius">2</item>
     </style>
 </resources>

@@ -4,26 +4,26 @@
     api-level="23"
     density="560dpi"
     format="7"
-    timestamp="1388349785419437" >
+    timestamp="1390472066806955" >
 
     <task
         name="javac"
-        duration="286" />
+        duration="347" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="129" />
+        duration="117" />
     <task
         name="verifier"
-        duration="28" />
+        duration="25" />
 
     <artifact
         location="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/outputs/apk/Application-debug.apk"
         type="MAIN" />
 
-    <build timestamp="1388349785419437" >
+    <build timestamp="1390472066806955" >
         <artifact
             location="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/outputs/apk/Application-debug.apk"
             type="MAIN" />

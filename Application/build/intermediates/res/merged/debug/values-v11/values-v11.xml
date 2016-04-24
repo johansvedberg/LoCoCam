@@ -158,5 +158,4 @@
         <item name="android:actionModePasteDrawable">?actionModePasteDrawable</item>
     </style>
     <style name="Platform.Widget.AppCompat.Spinner" parent="android:Widget.Holo.Spinner"/>
-    <style name="Theme.Base" parent="android:Theme.Holo.Light"/>
 </resources>

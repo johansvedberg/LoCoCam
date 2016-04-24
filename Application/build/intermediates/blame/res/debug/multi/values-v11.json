@@ -348,25 +348,6 @@
                         "endOffset": 11655
                     }
                 }
-            },
-            {
-                "to": {
-                    "startLine": 160,
-                    "startColumn": 4,
-                    "startOffset": 11660,
-                    "endColumn": 64,
-                    "endOffset": 11720
-                },
-                "from": {
-                    "file": "/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/src/main/res/values-v11/template-styles.xml",
-                    "position": {
-                        "startLine": 19,
-                        "startColumn": 4,
-                        "startOffset": 650,
-                        "endColumn": 65,
-                        "endOffset": 711
-                    }
-                }
             }
         ]
     }

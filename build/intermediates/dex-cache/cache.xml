@@ -26,7 +26,7 @@
         jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
         jumboMode="true"
         revision="23.0.2"
-        sha1="bc5da69936cc2df302e795b28fc048a260e19e1b">
+        sha1="a2aa7ef18cc65501423d90259afc6efca18938c0">
         <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_f6103ee735e9fe49885da795cc93394cfe18bcfa/classes.dex" />
     </item>
     <item
@@ -54,7 +54,7 @@
         jar="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
         jumboMode="true"
         revision="23.0.2"
-        sha1="15942eb75ffe4b903dadaa822e0e66cef6321cdd">
+        sha1="dbe1dd0d224990e8b42d199a316f2daf6e554a1d">
         <dex dex="/Users/johansvedberg/AndroidStudioProjects/LoCoCam/Application/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_27027541701b3955e871e7d4a029503f3ef82fb9/classes.dex" />
     </item>
     <item
