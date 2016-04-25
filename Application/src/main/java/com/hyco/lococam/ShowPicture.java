@@ -21,9 +21,9 @@ public class ShowPicture extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_show_picture);
         ActionBar actionBar = getActionBar();
+
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -68,6 +68,7 @@ public class ShowPicture extends Activity {
 
     public void delete(View view) {
 
+        //Find a delete function that works
 
     }
 

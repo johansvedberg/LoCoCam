@@ -88,7 +88,7 @@ public class CameraFragment extends Fragment
     private static final int STATE_PICTURE_TAKEN = 4;
 
     private static final int MAX_PREVIEW_WIDTH = 1920;
-    
+
     private static final int MAX_PREVIEW_HEIGHT = 1080;
 
 
@@ -331,7 +331,6 @@ public class CameraFragment extends Fragment
 
         super.onActivityCreated(savedInstanceState);
 
-
     }
 
     @Override
@@ -486,6 +485,7 @@ public class CameraFragment extends Fragment
             requestCameraPermission();
             return;
         }
+
         setUpCameraOutputs(width, height);
         configureTransform(width, height);
         Activity activity = getActivity();
@@ -603,15 +603,18 @@ public class CameraFragment extends Fragment
 
     private void configureTransform(int viewWidth, int viewHeight) {
         Activity activity = getActivity();
+
         if (null == mTextureView || null == mPreviewSize || null == activity) {
             return;
         }
+
         int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
         Matrix matrix = new Matrix();
         RectF viewRect = new RectF(0, 0, viewWidth, viewHeight);
         RectF bufferRect = new RectF(0, 0, mPreviewSize.getHeight(), mPreviewSize.getWidth());
         float centerX = viewRect.centerX();
         float centerY = viewRect.centerY();
+
         if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
             bufferRect.offset(centerX - bufferRect.centerX(), centerY - bufferRect.centerY());
             matrix.setRectToRect(viewRect, bufferRect, Matrix.ScaleToFit.FILL);
@@ -624,6 +627,7 @@ public class CameraFragment extends Fragment
                 (Surface.ROTATION_180 == rotation) {
             matrix.postRotate(180, centerX, centerY);
         }
+
         mTextureView.setTransform(matrix);
 
 
@@ -668,6 +672,7 @@ public class CameraFragment extends Fragment
     private void captureStillPicture() {
         try {
             final Activity activity = getActivity();
+
             if (null == activity || null == mCameraDevice) {
                 return;
             }
@@ -732,6 +737,7 @@ public class CameraFragment extends Fragment
             case R.id.picture: {
 
                 Calendar c = Calendar.getInstance();
+
                 if (c.get(Calendar.MONTH) < 9) {
                     filename = "IMG_" + String.valueOf(c.get(Calendar.YEAR)) + "0" + String.valueOf(c.get(Calendar.MONTH) + 1) + String.valueOf(c.get(Calendar.DAY_OF_MONTH) + "_" + String.valueOf(c.get(Calendar.HOUR_OF_DAY)) + String.valueOf(c.get(Calendar.MINUTE) + String.valueOf(c.get(Calendar.SECOND))));
 
@@ -739,21 +745,21 @@ public class CameraFragment extends Fragment
                     filename = "IMG_" + String.valueOf(c.get(Calendar.YEAR)) + String.valueOf(c.get(Calendar.MONTH) + 1) + String.valueOf(c.get(Calendar.DAY_OF_MONTH) + "_" + String.valueOf(c.get(Calendar.HOUR_OF_DAY)) + String.valueOf(c.get(Calendar.MINUTE) + String.valueOf(c.get(Calendar.SECOND))));
 
                 }
+
                 mFile = new File(getActivity().getExternalFilesDir(null), filename + ".jpg");
                 takePicture();
                 break;
-
-
             }
 
             case R.id.filters: {
+
                 final CharSequence[] items = {
                         "Sepia", "Negative", "No filter"
                 };
+
                 final Button button = (Button) view.findViewById(R.id.filters);
 
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-
                 alertDialogBuilder.setItems(items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
                         String selectedText = items[item].toString();
