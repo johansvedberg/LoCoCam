@@ -140,6 +140,8 @@ public class CameraFragment extends Fragment
 
     private int selectedfilter = 0;
 
+    private boolean isClosed = true;
+
 
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
 
@@ -184,7 +186,8 @@ public class CameraFragment extends Fragment
     private Sensor mAccelerometer;
     private boolean mInitialized;
     private float mLastX, mLastY, mLastZ;
-    private final float Sensitivity = (float) 3.0;
+    private final float Sensitivity = (float) 7.0;
+    private long lastUpdate;
 
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
@@ -519,10 +522,12 @@ public class CameraFragment extends Fragment
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while trying to lock camera opening.", e);
         }
+
     }
 
 
     private void closeCamera() {
+
         try {
             mCameraOpenCloseLock.acquire();
             if (null != mCaptureSession) {
@@ -541,6 +546,7 @@ public class CameraFragment extends Fragment
             throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
         } finally {
             mCameraOpenCloseLock.release();
+
         }
     }
 
@@ -597,6 +603,8 @@ public class CameraFragment extends Fragment
                                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
                                 // Flash is automatically enabled when necessary.
                                 setAutoFlash(mPreviewRequestBuilder);
+
+                                mPreviewRequestBuilder.set(CaptureRequest.CONTROL_EFFECT_MODE, selectedfilter);
 
                                 // Finally, we start displaying the camera preview.
                                 mPreviewRequest = mPreviewRequestBuilder.build();
@@ -784,14 +792,17 @@ public class CameraFragment extends Fragment
                         if (selectedText.equals("Sepia")) {
                             selectedfilter = 4;
                             button.setText("Sepia");
+                            newFilter();
 
                         } else if (selectedText.equals("Negative")) {
                             selectedfilter = 2;
                             button.setText("Negative");
+                            newFilter();
 
                         } else if (selectedText.equals("No filter")) {
                             selectedfilter = 0;
                             button.setText("No filter");
+                            newFilter();
                         }
                     }
                 });
@@ -806,15 +817,7 @@ public class CameraFragment extends Fragment
 
                 frontCamera = !frontCamera;
 
-                closeCamera();
-                stopBackgroundThread();
-                startBackgroundThread();
-
-                if (mTextureView.isAvailable()) {
-                    openCamera(mTextureView.getWidth(), mTextureView.getHeight());
-                } else {
-                    mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
-                }
+                resetCamera();
 
 
                 break;
@@ -832,38 +835,67 @@ public class CameraFragment extends Fragment
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        float x = event.values[0];
-        float y = event.values[1];
-        float z = event.values[2];
 
-        if (!mInitialized) {
-            mLastX = x;
-            mLastY = y;
-            mLastZ = z;
-            mInitialized = true;
+        long curTime = System.currentTimeMillis();
 
-        } else {
-            float deltaX = Math.abs(mLastX - x);
-            float deltaY = Math.abs(mLastY - y);
-            float deltaZ = Math.abs(mLastZ - z);
-            if (deltaX < Sensitivity) deltaX = (float) 0.0;
-            if (deltaY < Sensitivity) deltaY = (float) 0.0;
-            if (deltaZ < Sensitivity) deltaZ = (float) 0.0;
+        if ((curTime - lastUpdate) > 500) {
 
-            mLastX = x;
-            mLastY = y;
-            mLastZ = z;
+            lastUpdate = curTime;
 
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
 
-            if (deltaX > deltaY) {
-                button.setText("Sepia");
-                selectedfilter = 4;
-            } else if (deltaY > deltaX) {
-                button.setText("Negative");
-                selectedfilter = 2;
+            if (!mInitialized) {
+                mLastX = x;
+                mLastY = y;
+                mLastZ = z;
+                mInitialized = true;
+
+            } else {
+                float deltaX = Math.abs(mLastX - x);
+                float deltaY = Math.abs(mLastY - y);
+                float deltaZ = Math.abs(mLastZ - z);
+                if (deltaX < Sensitivity) deltaX = (float) 0.0;
+                if (deltaY < Sensitivity) deltaY = (float) 0.0;
+
+                mLastX = x;
+                mLastY = y;
+                mLastZ = z;
+
+                if (deltaX > deltaY) {
+                    button.setText("Sepia");
+                    selectedfilter = 4;
+                    newFilter();
+
+                } else if (deltaY > deltaX) {
+                    button.setText("Negative");
+                    selectedfilter = 2;
+                    newFilter();
+                }
             }
         }
 
+    }
+
+    private void resetCamera() {
+
+            isClosed = false;
+            closeCamera();
+            stopBackgroundThread();
+            startBackgroundThread();
+
+            if (mTextureView.isAvailable()) {
+                openCamera(mTextureView.getWidth(), mTextureView.getHeight());
+            } else {
+                mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+            }
+
+
+    }
+
+    private void newFilter(){
+        createCameraPreviewSession();
     }
 
     @Override
