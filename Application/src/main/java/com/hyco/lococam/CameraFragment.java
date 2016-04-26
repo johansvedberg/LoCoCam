@@ -17,6 +17,10 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -61,7 +65,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 public class CameraFragment extends Fragment
-        implements View.OnClickListener, FragmentCompat.OnRequestPermissionsResultCallback {
+        implements View.OnClickListener, SensorEventListener, FragmentCompat.OnRequestPermissionsResultCallback {
 
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
@@ -122,6 +126,8 @@ public class CameraFragment extends Fragment
 
     private String mCameraId;
 
+    private Button button;
+
     private AutoFitTextureView mTextureView;
 
     private CameraCaptureSession mCaptureSession;
@@ -173,6 +179,12 @@ public class CameraFragment extends Fragment
     private ImageReader mImageReader;
 
     private File mFile;
+
+    private SensorManager mSensorManager;
+    private Sensor mAccelerometer;
+    private boolean mInitialized;
+    private float mLastX, mLastY, mLastZ;
+    private final float Sensitivity = (float) 3.0;
 
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
@@ -317,11 +329,15 @@ public class CameraFragment extends Fragment
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
+        button = (Button) view.findViewById(R.id.filters);
         view.findViewById(R.id.picture).setOnClickListener(this);
         view.findViewById(R.id.filters).setOnClickListener(this);
         view.findViewById(R.id.swapcamera).setOnClickListener(this);
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
         mFrame = (FrameLayout) view.findViewById(R.id.control);
+        mInitialized = false;
+        mSensorManager = (SensorManager) this.getContext().getSystemService(Activity.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
 
     }
@@ -336,6 +352,8 @@ public class CameraFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
+
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         startBackgroundThread();
 
         if (mTextureView.isAvailable()) {
@@ -349,6 +367,7 @@ public class CameraFragment extends Fragment
     public void onPause() {
         closeCamera();
         stopBackgroundThread();
+        mSensorManager.unregisterListener(this);
         super.onPause();
     }
 
@@ -757,7 +776,6 @@ public class CameraFragment extends Fragment
                         "Sepia", "Negative", "No filter"
                 };
 
-                final Button button = (Button) view.findViewById(R.id.filters);
 
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
                 alertDialogBuilder.setItems(items, new DialogInterface.OnClickListener() {
@@ -810,6 +828,49 @@ public class CameraFragment extends Fragment
             requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
         }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        float x = event.values[0];
+        float y = event.values[1];
+        float z = event.values[2];
+
+        if (!mInitialized) {
+            mLastX = x;
+            mLastY = y;
+            mLastZ = z;
+            mInitialized = true;
+
+        } else {
+            float deltaX = Math.abs(mLastX - x);
+            float deltaY = Math.abs(mLastY - y);
+            float deltaZ = Math.abs(mLastZ - z);
+            if (deltaX < Sensitivity) deltaX = (float) 0.0;
+            if (deltaY < Sensitivity) deltaY = (float) 0.0;
+            if (deltaZ < Sensitivity) deltaZ = (float) 0.0;
+
+            mLastX = x;
+            mLastY = y;
+            mLastZ = z;
+
+
+            if (deltaX > deltaY) {
+                button.setText("Sepia");
+                selectedfilter = 4;
+            } else if (deltaY > deltaX) {
+                button.setText("Negative");
+                selectedfilter = 2;
+            }
+        }
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+        // Right now - empty
+
     }
 
 
