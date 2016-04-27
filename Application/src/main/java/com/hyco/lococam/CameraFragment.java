@@ -174,6 +174,8 @@ public class CameraFragment extends Fragment
     };
 
 
+    private int sensor;
+
     private HandlerThread mBackgroundThread;
 
     private Handler mBackgroundHandler;
@@ -483,7 +485,7 @@ public class CameraFragment extends Fragment
                     mTextureView.setAspectRatio(
                             mPreviewSize.getHeight(), mPreviewSize.getWidth());
                 }
-
+               sensor =  characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
 
                 Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
                 mFlashSupported = available == null ? false : available;
@@ -718,8 +720,8 @@ public class CameraFragment extends Fragment
             setAutoFlash(captureBuilder);
 
 
-            int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+           // int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, sensor);
 
             CameraCaptureSession.CaptureCallback CaptureCallback
                     = new CameraCaptureSession.CaptureCallback() {
