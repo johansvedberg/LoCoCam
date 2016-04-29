@@ -155,7 +155,7 @@ public class CameraFragment extends Fragment
     private int selectedfilter = 0;
 
 
-    private boolean isClosed = true;
+
             private Location mLastLocation;
 
 
@@ -455,7 +455,9 @@ public class CameraFragment extends Fragment
     public void onConnectionSuspended(int i) {
         Log.i(TAG, "Connection suspended");
     }
-            public void getLastLocation(){
+
+
+     public void getLastLocation(){
                 mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                         mGoogleApiClient);
             }
@@ -773,7 +775,7 @@ public class CameraFragment extends Fragment
             captureBuilder.set(CaptureRequest.CONTROL_EFFECT_MODE, selectedfilter);
 
             // FOR GEOTAGGING
-            //captureBuilder.set(CaptureRequest.JPEG_GPS_LOCATION,);
+            captureBuilder.set(CaptureRequest.JPEG_GPS_LOCATION,mLastLocation);
 
 
             captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
@@ -826,6 +828,7 @@ public class CameraFragment extends Fragment
         switch (view.getId()) {
             case R.id.picture: {
 
+                getLastLocation();
                 Calendar c = Calendar.getInstance();
 
                 if (c.get(Calendar.MONTH) < 9) {
@@ -943,7 +946,7 @@ public class CameraFragment extends Fragment
 
     private void resetCamera() {
 
-            isClosed = false;
+
             closeCamera();
             stopBackgroundThread();
             startBackgroundThread();
