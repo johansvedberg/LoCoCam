@@ -31,6 +31,7 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.location.Location;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Bundle;
@@ -51,6 +52,10 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -64,14 +69,21 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import static android.support.v4.content.PermissionChecker.checkSelfPermission;
+
 public class CameraFragment extends Fragment
-        implements View.OnClickListener, SensorEventListener, FragmentCompat.OnRequestPermissionsResultCallback {
+        implements View.OnClickListener, SensorEventListener, FragmentCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks
+        {
 
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final String FRAGMENT_DIALOG = "dialog";
-
+    private static final int LOCATION_REQUEST=2;
+    private static final String[] LOCATION_PERMS={
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            //Manifest.permission.ACCESS_COARSE_LOCATION
+    };
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
         ORIENTATIONS.append(Surface.ROTATION_90, 0);
@@ -94,6 +106,8 @@ public class CameraFragment extends Fragment
     private static final int MAX_PREVIEW_WIDTH = 1920;
 
     private static final int MAX_PREVIEW_HEIGHT = 1080;
+
+
 
 
     private final TextureView.SurfaceTextureListener mSurfaceTextureListener
@@ -140,7 +154,9 @@ public class CameraFragment extends Fragment
 
     private int selectedfilter = 0;
 
+
     private boolean isClosed = true;
+            private Location mLastLocation;
 
 
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
@@ -183,7 +199,7 @@ public class CameraFragment extends Fragment
     private ImageReader mImageReader;
 
     private File mFile;
-
+    protected GoogleApiClient mGoogleApiClient;
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private boolean mInitialized;
@@ -343,7 +359,10 @@ public class CameraFragment extends Fragment
         mInitialized = false;
         mSensorManager = (SensorManager) this.getContext().getSystemService(Activity.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
+        if (!canAccessLocation()) {
+            requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
+        }
+        buildGoogleApiClient();
 
     }
 
@@ -397,7 +416,49 @@ public class CameraFragment extends Fragment
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+    private boolean canAccessLocation() {
+        return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
+    }
+    private boolean hasPermission(String perm) {
+        Activity activity = getActivity();
+        return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(activity, perm));
+    }
 
+
+
+    protected synchronized void buildGoogleApiClient() {
+        Activity activity = getActivity();
+        mGoogleApiClient = new GoogleApiClient.Builder(activity)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+    public void onStart(){
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+    public void onStop(){
+        super.onStop();
+        mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.i(TAG, "Connected to GoogleApiClient");
+    }
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, "Connection suspended");
+    }
+            public void getLastLocation(){
+                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                        mGoogleApiClient);
+            }
     private void setUpCameraOutputs(int width, int height) {
         Activity activity = getActivity();
         CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
