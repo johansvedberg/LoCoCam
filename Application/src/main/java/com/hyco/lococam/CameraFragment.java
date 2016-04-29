@@ -31,6 +31,8 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.media.Image;
 import android.media.ImageReader;
@@ -55,6 +57,7 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,24 +69,26 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import static android.support.v4.content.PermissionChecker.checkSelfPermission;
 
 public class CameraFragment extends Fragment
-        implements View.OnClickListener, SensorEventListener, FragmentCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks
-        {
+        implements View.OnClickListener, SensorEventListener, FragmentCompat.OnRequestPermissionsResultCallback, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final String FRAGMENT_DIALOG = "dialog";
-    private static final int LOCATION_REQUEST=2;
-    private static final String[] LOCATION_PERMS={
+    private static final int LOCATION_REQUEST = 2;
+    private static final String[] LOCATION_PERMS = {
             Manifest.permission.ACCESS_FINE_LOCATION,
             //Manifest.permission.ACCESS_COARSE_LOCATION
     };
+
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
         ORIENTATIONS.append(Surface.ROTATION_90, 0);
@@ -106,8 +111,6 @@ public class CameraFragment extends Fragment
     private static final int MAX_PREVIEW_WIDTH = 1920;
 
     private static final int MAX_PREVIEW_HEIGHT = 1080;
-
-
 
 
     private final TextureView.SurfaceTextureListener mSurfaceTextureListener
@@ -155,8 +158,9 @@ public class CameraFragment extends Fragment
     private int selectedfilter = 0;
 
 
+    private Location mLastLocation;
 
-            private Location mLastLocation;
+    private String currentGeofence;
 
 
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
@@ -305,6 +309,41 @@ public class CameraFragment extends Fragment
         }
     }
 
+    public void currentGeofence(Location currentLocation) {
+        final Activity activity = getActivity();
+
+        for (Map.Entry<String, LatLng> entry : Constants.LUND_LANDMARKS.entrySet()) {
+            double latitude = entry.getValue().latitude;
+            double longitude = entry.getValue().longitude;
+            Location tempLocation = new Location("temporary location");
+            tempLocation.setLatitude(latitude);
+            tempLocation.setLongitude(longitude);
+            if (currentLocation.distanceTo(tempLocation) < 500) {
+                currentGeofence = entry.getKey();
+            }
+        }
+
+        if (currentGeofence == null) {
+            Geocoder geocoder = new Geocoder(activity, Locale.getDefault());
+            double latitude = currentLocation.getLatitude();
+            double longitude = currentLocation.getLongitude();
+            List<Address> addresses = null;
+            try {
+                addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (addresses.size() > 0) {
+                currentGeofence = addresses.get(0).getLocality();
+            } else {
+                currentGeofence = "Location Error";
+            }
+
+        }
+
+
+    }
+
     private static Size chooseOptimalSize(Size[] choices, int textureViewWidth,
                                           int textureViewHeight, int maxWidth, int maxHeight, Size aspectRatio) {
 
@@ -416,14 +455,15 @@ public class CameraFragment extends Fragment
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+
     private boolean canAccessLocation() {
-        return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
-    }
-    private boolean hasPermission(String perm) {
-        Activity activity = getActivity();
-        return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(activity, perm));
+        return (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
     }
 
+    private boolean hasPermission(String perm) {
+        Activity activity = getActivity();
+        return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(activity, perm));
+    }
 
 
     protected synchronized void buildGoogleApiClient() {
@@ -434,11 +474,13 @@ public class CameraFragment extends Fragment
                 .addApi(LocationServices.API)
                 .build();
     }
-    public void onStart(){
+
+    public void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
     }
-    public void onStop(){
+
+    public void onStop() {
         super.onStop();
         mGoogleApiClient.disconnect();
     }
@@ -447,20 +489,23 @@ public class CameraFragment extends Fragment
     public void onConnected(Bundle bundle) {
         Log.i(TAG, "Connected to GoogleApiClient");
     }
+
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
+
     @Override
     public void onConnectionSuspended(int i) {
         Log.i(TAG, "Connection suspended");
     }
 
 
-     public void getLastLocation(){
-                mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                        mGoogleApiClient);
-            }
+    public void getLastLocation() {
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+    }
+
     private void setUpCameraOutputs(int width, int height) {
         Activity activity = getActivity();
         CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
@@ -548,7 +593,7 @@ public class CameraFragment extends Fragment
                     mTextureView.setAspectRatio(
                             mPreviewSize.getHeight(), mPreviewSize.getWidth());
                 }
-               sensor =  characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                sensor = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
 
                 Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
                 mFlashSupported = available == null ? false : available;
@@ -775,7 +820,7 @@ public class CameraFragment extends Fragment
             captureBuilder.set(CaptureRequest.CONTROL_EFFECT_MODE, selectedfilter);
 
             // FOR GEOTAGGING
-            captureBuilder.set(CaptureRequest.JPEG_GPS_LOCATION,mLastLocation);
+            captureBuilder.set(CaptureRequest.JPEG_GPS_LOCATION, mLastLocation);
 
 
             captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
@@ -783,7 +828,7 @@ public class CameraFragment extends Fragment
             setAutoFlash(captureBuilder);
 
 
-           // int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+            // int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, sensor);
 
             CameraCaptureSession.CaptureCallback CaptureCallback
@@ -829,6 +874,7 @@ public class CameraFragment extends Fragment
             case R.id.picture: {
 
                 getLastLocation();
+                currentGeofence(mLastLocation);
                 Calendar c = Calendar.getInstance();
 
                 if (c.get(Calendar.MONTH) < 9) {
@@ -947,20 +993,20 @@ public class CameraFragment extends Fragment
     private void resetCamera() {
 
 
-            closeCamera();
-            stopBackgroundThread();
-            startBackgroundThread();
+        closeCamera();
+        stopBackgroundThread();
+        startBackgroundThread();
 
-            if (mTextureView.isAvailable()) {
-                openCamera(mTextureView.getWidth(), mTextureView.getHeight());
-            } else {
-                mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
-            }
+        if (mTextureView.isAvailable()) {
+            openCamera(mTextureView.getWidth(), mTextureView.getHeight());
+        } else {
+            mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+        }
 
 
     }
 
-    private void newFilter(){
+    private void newFilter() {
         createCameraPreviewSession();
     }
 
@@ -1004,13 +1050,18 @@ public class CameraFragment extends Fragment
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+
                 }
             }
 
             String path = mFile.toURI().toString();
             final Activity activity = getActivity();
+            Bundle bundle = new Bundle();
+            bundle.putString("locationKey", currentGeofence);
+            bundle.putString("path", path);
+            bundle.putString("filename", filename);
             Intent intent = new Intent(activity, ShowPicture.class);
-            intent.putExtra("path", path);
+            intent.putExtras(bundle);
             startActivity(intent);
 
 
