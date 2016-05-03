@@ -85,8 +85,7 @@ public class CameraFragment extends Fragment
     private static final String FRAGMENT_DIALOG = "dialog";
     private static final int LOCATION_REQUEST = 2;
     private static final String[] LOCATION_PERMS = {
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            //Manifest.permission.ACCESS_COARSE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION
     };
 
     static {
@@ -139,11 +138,29 @@ public class CameraFragment extends Fragment
 
     private boolean frontCamera = false;
 
+    private boolean mInitialized;
+
+    private boolean mFlashSupported;
+
     private String filename;
 
     private String mCameraId;
 
+    private String currentGeofence;
+
     private Button button;
+
+    private int selectedfilter = 0;
+
+    private int sensor;
+
+    private int mState = STATE_PREVIEW;
+
+    private float currentTemperature;
+
+    private float mLastX, mLastY, mLastZ;
+
+    private final float Sensitivity = (float) 7.0;
 
     private AutoFitTextureView mTextureView;
 
@@ -155,15 +172,33 @@ public class CameraFragment extends Fragment
 
     private FrameLayout mFrame;
 
-    private int selectedfilter = 0;
-
-
     private Location mLastLocation;
 
-    private String currentGeofence;
+    private HandlerThread mBackgroundThread;
 
-    private float currentTemperature;
+    private Handler mBackgroundHandler;
 
+    private ImageReader mImageReader;
+
+    private File mFile;
+
+    protected GoogleApiClient mGoogleApiClient;
+
+    private SensorManager mSensorManager;
+
+    private Sensor mAccelerometer;
+
+    private Sensor mTemperature;
+
+    private Sensor mProximity;
+
+    private long lastUpdate;
+
+    private CaptureRequest.Builder mPreviewRequestBuilder;
+
+    private CaptureRequest mPreviewRequest;
+    
+    private Semaphore mCameraOpenCloseLock = new Semaphore(1);
 
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
 
@@ -195,26 +230,6 @@ public class CameraFragment extends Fragment
 
     };
 
-
-    private int sensor;
-
-    private HandlerThread mBackgroundThread;
-
-    private Handler mBackgroundHandler;
-
-    private ImageReader mImageReader;
-
-    private File mFile;
-    protected GoogleApiClient mGoogleApiClient;
-    private SensorManager mSensorManager;
-    private Sensor mAccelerometer;
-    private Sensor mTemperature;
-    private Sensor mProximity;
-    private boolean mInitialized;
-    private float mLastX, mLastY, mLastZ;
-    private final float Sensitivity = (float) 7.0;
-    private long lastUpdate;
-
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
 
@@ -225,16 +240,6 @@ public class CameraFragment extends Fragment
 
     };
 
-
-    private CaptureRequest.Builder mPreviewRequestBuilder;
-
-    private CaptureRequest mPreviewRequest;
-
-    private int mState = STATE_PREVIEW;
-
-    private Semaphore mCameraOpenCloseLock = new Semaphore(1);
-
-    private boolean mFlashSupported;
 
     private CameraCaptureSession.CaptureCallback mCaptureCallback
             = new CameraCaptureSession.CaptureCallback() {
@@ -300,6 +305,33 @@ public class CameraFragment extends Fragment
         }
 
     };
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_camera2_basic, container, false);
+    }
+
+    @Override
+    public void onViewCreated(final View view, Bundle savedInstanceState) {
+        button = (Button) view.findViewById(R.id.filters);
+        view.findViewById(R.id.picture).setOnClickListener(this);
+        view.findViewById(R.id.filters).setOnClickListener(this);
+        view.findViewById(R.id.swapcamera).setOnClickListener(this);
+        mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
+        mFrame = (FrameLayout) view.findViewById(R.id.control);
+        mInitialized = false;
+        mSensorManager = (SensorManager) this.getContext().getSystemService(Activity.SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mTemperature = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        if (!canAccessLocation()) {
+            requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
+        }
+        buildGoogleApiClient();
+
+    }
 
     private void showToast(final String text) {
         final Activity activity = getActivity();
@@ -385,31 +417,7 @@ public class CameraFragment extends Fragment
         return new CameraFragment();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_camera2_basic, container, false);
-    }
 
-    @Override
-    public void onViewCreated(final View view, Bundle savedInstanceState) {
-        button = (Button) view.findViewById(R.id.filters);
-        view.findViewById(R.id.picture).setOnClickListener(this);
-        view.findViewById(R.id.filters).setOnClickListener(this);
-        view.findViewById(R.id.swapcamera).setOnClickListener(this);
-        mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
-        mFrame = (FrameLayout) view.findViewById(R.id.control);
-        mInitialized = false;
-        mSensorManager = (SensorManager) this.getContext().getSystemService(Activity.SENSOR_SERVICE);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mTemperature = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
-        mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-        if (!canAccessLocation()) {
-            requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
-        }
-        buildGoogleApiClient();
-
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
