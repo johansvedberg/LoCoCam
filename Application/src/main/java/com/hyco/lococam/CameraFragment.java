@@ -162,6 +162,8 @@ public class CameraFragment extends Fragment
 
     private String currentGeofence;
 
+    private float currentTemperature;
+
 
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
 
@@ -206,6 +208,8 @@ public class CameraFragment extends Fragment
     protected GoogleApiClient mGoogleApiClient;
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
+    private Sensor mTemperature;
+    private Sensor mProximity;
     private boolean mInitialized;
     private float mLastX, mLastY, mLastZ;
     private final float Sensitivity = (float) 7.0;
@@ -398,6 +402,8 @@ public class CameraFragment extends Fragment
         mInitialized = false;
         mSensorManager = (SensorManager) this.getContext().getSystemService(Activity.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mTemperature = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         if (!canAccessLocation()) {
             requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
         }
@@ -417,6 +423,7 @@ public class CameraFragment extends Fragment
         super.onResume();
 
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
         startBackgroundThread();
 
         if (mTextureView.isAvailable()) {
@@ -948,44 +955,61 @@ public class CameraFragment extends Fragment
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        long curTime = System.currentTimeMillis();
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 
-        if ((curTime - lastUpdate) > 500) {
+            long curTime = System.currentTimeMillis();
 
-            lastUpdate = curTime;
+            if ((curTime - lastUpdate) > 500) {
 
-            float x = event.values[0];
-            float y = event.values[1];
-            float z = event.values[2];
+                lastUpdate = curTime;
 
-            if (!mInitialized) {
-                mLastX = x;
-                mLastY = y;
-                mLastZ = z;
-                mInitialized = true;
+                float x = event.values[0];
+                float y = event.values[1];
+                float z = event.values[2];
 
-            } else {
-                float deltaX = Math.abs(mLastX - x);
-                float deltaY = Math.abs(mLastY - y);
-                float deltaZ = Math.abs(mLastZ - z);
-                if (deltaX < Sensitivity) deltaX = (float) 0.0;
-                if (deltaY < Sensitivity) deltaY = (float) 0.0;
+                if (!mInitialized) {
+                    mLastX = x;
+                    mLastY = y;
+                    mLastZ = z;
+                    mInitialized = true;
 
-                mLastX = x;
-                mLastY = y;
-                mLastZ = z;
+                } else {
+                    float deltaX = Math.abs(mLastX - x);
+                    float deltaY = Math.abs(mLastY - y);
+                    float deltaZ = Math.abs(mLastZ - z);
+                    if (deltaX < Sensitivity) deltaX = (float) 0.0;
+                    if (deltaY < Sensitivity) deltaY = (float) 0.0;
 
-                if (deltaX > deltaY) {
-                    button.setText("Sepia");
-                    selectedfilter = 4;
-                    newFilter();
+                    mLastX = x;
+                    mLastY = y;
+                    mLastZ = z;
 
-                } else if (deltaY > deltaX) {
-                    button.setText("Negative");
-                    selectedfilter = 2;
-                    newFilter();
+                    if (deltaX > deltaY) {
+                        button.setText("Sepia");
+                        selectedfilter = 4;
+                        newFilter();
+
+                    } else if (deltaY > deltaX) {
+                        button.setText("Negative");
+                        selectedfilter = 2;
+                        newFilter();
+                    }
+
                 }
             }
+        } else if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+
+            if (event.values[0] == 0) {
+                frontCamera = !frontCamera;
+
+                resetCamera();
+
+            } else {
+                //far
+
+            }
+
+
         }
 
     }
@@ -1060,6 +1084,7 @@ public class CameraFragment extends Fragment
             bundle.putString("locationKey", currentGeofence);
             bundle.putString("path", path);
             bundle.putString("filename", filename);
+            bundle.putString("temperature", String.valueOf(currentTemperature));
             Intent intent = new Intent(activity, ShowPicture.class);
             intent.putExtras(bundle);
             startActivity(intent);

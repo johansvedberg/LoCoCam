@@ -45,6 +45,8 @@ public class ShowPicture extends Activity {
     private HandlerThread mBackgroundThread;
     private Handler mBackgroundHandler;
     private String filename;
+    private String temperature;
+    private String info;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,9 @@ public class ShowPicture extends Activity {
         path = getIntent().getStringExtra("path");
         filename = getIntent().getStringExtra("filename");
         currentGeofence = getIntent().getStringExtra("locationKey");
+        temperature = getIntent().getStringExtra("temperature");
+        info = currentGeofence + " " + temperature + "°C";
+
 
 
         SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) findViewById(R.id.picture);
@@ -139,17 +144,18 @@ public class ShowPicture extends Activity {
 
             Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
             paintText.setColor(Color.WHITE);
-            paintText.setTextSize(500);
+            paintText.setTextSize(200);
             paintText.setStyle(Paint.Style.FILL);
             paintText.setShadowLayer(10f, 10f, 10f, Color.BLACK);
 
             Rect rectText = new Rect();
-            paintText.getTextBounds(currentGeofence, 0, currentGeofence.length(), rectText);
+            paintText.getTextBounds(info, 0, info.length(), rectText);
 
-            newCanvas.drawText(currentGeofence,
+
+            newCanvas.drawText(info,
                     0, rectText.height(), paintText);
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
         }
 

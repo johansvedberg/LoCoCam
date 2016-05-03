@@ -14,7 +14,7 @@
  limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/cardview_dark_background"
+    android:background="@color/wallet_bright_foreground_holo_light"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -24,7 +24,7 @@
         android:layout_height="112dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:background="@color/cardview_dark_background">
+        android:background="@color/wallet_bright_foreground_holo_light">
 
         <ImageButton
             android:id="@+id/picture"
@@ -32,7 +32,7 @@
             android:layout_height="80dp"
             android:layout_gravity="center"
             android:text="@string/picture"
-            android:src="@drawable/nexusae0_cc"
+            android:src="@drawable/shutter"
             android:scaleType="centerInside"
             android:layout_marginBottom="5dp"
             android:background="@android:color/transparent"
