@@ -32,7 +32,7 @@
             android:layout_height="80dp"
             android:layout_gravity="center"
             android:text="@string/picture"
-            android:src="@drawable/shutter"
+            android:src="@drawable/shutterbutton_final"
             android:scaleType="centerInside"
             android:layout_marginBottom="5dp"
             android:background="@android:color/transparent"
