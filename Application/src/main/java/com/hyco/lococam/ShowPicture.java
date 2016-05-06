@@ -28,11 +28,18 @@ import android.widget.TextView;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLConnection;
+import java.util.List;
 
 
 public class ShowPicture extends Activity {
@@ -45,8 +52,10 @@ public class ShowPicture extends Activity {
     private HandlerThread mBackgroundThread;
     private Handler mBackgroundHandler;
     private String filename;
-    private String temperature;
+    private int temperature;
     private String info;
+    private String condition;
+    private String info2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,14 +75,16 @@ public class ShowPicture extends Activity {
         path = getIntent().getStringExtra("path");
         filename = getIntent().getStringExtra("filename");
         currentGeofence = getIntent().getStringExtra("locationKey");
-        temperature = getIntent().getStringExtra("temperature");
-        info = currentGeofence + " " + temperature + "°C";
+        temperature = getIntent().getIntExtra("temperature",0);
+        condition = getIntent().getStringExtra("condition");
+
 
 
 
         SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) findViewById(R.id.picture);
 
-
+        info = currentGeofence;
+        info2 = condition + ", " + temperature + "°C";
         myUri = Uri.parse(path);
 
         processedBitmap = processingBitmap();
@@ -82,6 +93,7 @@ public class ShowPicture extends Activity {
         imageView.setImage(ImageSource.bitmap(processedBitmap));
         File mFile = new File(this.getExternalFilesDir(null), filename + "(2).png");
         pnguri = Uri.parse(mFile.toURI().toString());
+
 
 
         ImageSaver imageSaver = new ImageSaver(mFile);
@@ -144,16 +156,24 @@ public class ShowPicture extends Activity {
 
             Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
             paintText.setColor(Color.WHITE);
-            paintText.setTextSize(200);
+            paintText.setTextSize(300);
             paintText.setStyle(Paint.Style.FILL);
             paintText.setShadowLayer(10f, 10f, 10f, Color.BLACK);
 
             Rect rectText = new Rect();
+
             paintText.getTextBounds(info, 0, info.length(), rectText);
-
-
             newCanvas.drawText(info,
                     0, rectText.height(), paintText);
+
+
+            Rect bounds = new Rect();
+            paintText.getTextBounds(info2, 0, info2.length(), bounds);
+            int x = (newBitmap.getWidth() - bounds.width() - 100) ;
+            int y = (newBitmap.getHeight() - bounds.height() + 50);
+
+            newCanvas.drawText(info2, x, y, paintText);
+
         } catch (FileNotFoundException e) {
 
             e.printStackTrace();
@@ -213,6 +233,8 @@ public class ShowPicture extends Activity {
         stopBackgroundThread();
         super.onPause();
     }
+
+
 
 
 }
