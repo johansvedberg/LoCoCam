@@ -203,6 +203,8 @@ public class CameraFragment extends Fragment
 
     private Sensor mProximity;
 
+    private Sensor mLinearMotion;
+
     private long lastUpdate;
 
     private CaptureRequest.Builder mPreviewRequestBuilder;
@@ -210,6 +212,13 @@ public class CameraFragment extends Fragment
     private CaptureRequest mPreviewRequest;
     
     private Semaphore mCameraOpenCloseLock = new Semaphore(1);
+
+    private Double motionUp;
+    private Double motionDown;
+
+    private boolean selfie;
+    private int counter;
+    private float yTilt;
 
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
 
@@ -337,6 +346,12 @@ public class CameraFragment extends Fragment
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mTemperature = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        mLinearMotion = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+
+        motionUp = 0.0;
+        motionDown = 0.0;
+        selfie = false;
+
         if (!canAccessLocation()) {
             requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
         }
@@ -445,8 +460,10 @@ public class CameraFragment extends Fragment
     public void onResume() {
         super.onResume();
 
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this, mLinearMotion, SensorManager.SENSOR_DELAY_UI);
+
         startBackgroundThread();
 
         if (mTextureView.isAvailable()) {
@@ -980,13 +997,15 @@ public class CameraFragment extends Fragment
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && false) {
 
             long curTime = System.currentTimeMillis();
 
             if ((curTime - lastUpdate) > 500) {
 
                 lastUpdate = curTime;
+
+                yTilt = event.values[1];
 
                 float x = event.values[0];
                 float y = event.values[1];
@@ -1035,6 +1054,47 @@ public class CameraFragment extends Fragment
             }
 
 
+        } else if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
+
+            if(motionUp != 0) {
+                counter++;
+            }
+            if(event.values[1] < -0.5 && event.values[1] > -5 && event.values[2] > 0.5) {
+                motionUp = motionUp + event.values[1] - event.values[2];
+
+            } else if(event.values[1] > 0.5) {
+                motionDown = motionDown + event.values[1];
+            }
+
+            if(counter >= 15) {
+                counter = 0;
+                if (!selfie && motionUp < -15) {
+                    frontCamera = true;
+                    resetCamera();
+                    selfie = true;
+
+                } else if (selfie && motionDown > 15) {
+                    if (yTilt > - 5 && yTilt < 5){
+                        frontCamera = false;
+                    } else {
+                        frontCamera = false;
+                    }
+                    resetCamera();
+                    selfie = false;
+                }
+                motionUp = 0.0;
+                motionDown = 0.0;
+
+            }
+
+
+
+
+            if(counter >= 15) {
+                motionUp = 0.0;
+                motionDown = 0.0;
+                counter = 0;
+            }
         }
 
     }
