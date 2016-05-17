@@ -56,9 +56,16 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.vision.CameraSource;
+import com.google.android.gms.vision.MultiProcessor;
+import com.google.android.gms.vision.Tracker;
+import com.google.android.gms.vision.face.Face;
+import com.google.android.gms.vision.face.FaceDetector;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -120,6 +127,8 @@ public class CameraFragment extends Fragment
 
     private static final int MAX_PREVIEW_HEIGHT = 1080;
 
+    private static final int RC_HANDLE_GMS = 9001;
+
 
     private final TextureView.SurfaceTextureListener mSurfaceTextureListener
             = new TextureView.SurfaceTextureListener() {
@@ -161,6 +170,8 @@ public class CameraFragment extends Fragment
 
     private Button button;
 
+    private String iconURL;
+
     private int currentTemperature;
 
     private int selectedfilter = 0;
@@ -178,6 +189,8 @@ public class CameraFragment extends Fragment
     private CameraCaptureSession mCaptureSession;
 
     private CameraDevice mCameraDevice;
+
+    private CameraSource mCameraSource;
 
     private Size mPreviewSize;
 
@@ -219,6 +232,7 @@ public class CameraFragment extends Fragment
     private boolean selfie;
     private int counter;
     private float yTilt;
+
 
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
 
@@ -352,6 +366,11 @@ public class CameraFragment extends Fragment
         motionDown = 0.0;
         selfie = false;
 
+        //Facedetection stuff
+
+
+
+
         if (!canAccessLocation()) {
             requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
         }
@@ -361,6 +380,9 @@ public class CameraFragment extends Fragment
 
 
     }
+
+
+
 
     private void showToast(final String text) {
         final Activity activity = getActivity();
@@ -1178,6 +1200,7 @@ public class CameraFragment extends Fragment
             bundle.putString("filename", filename);
             bundle.putInt("temperature", currentTemperature);
             bundle.putString("condition", condition);
+            bundle.putString("iconURL", iconURL);
             Intent intent = new Intent(activity, ShowPicture.class);
             intent.putExtras(bundle);
             startActivity(intent);
@@ -1264,7 +1287,9 @@ public class CameraFragment extends Fragment
 
             URLConnection tc = null;
             BufferedReader in = null;
+            String iconCode = "10d";
             try {
+
                 URL subredditURL = new URL(
                         "http://api.openweathermap.org/data/2.5/weather?q=Lund,SWE&APPID=3f601da80614d1a026bfbb9c72c15ab7");
                 tc = subredditURL.openConnection();
@@ -1279,12 +1304,14 @@ public class CameraFragment extends Fragment
                     condition = JSONWeather.getString("description");
 
                     JSONObject JSONTemperature = object.getJSONObject("main");
-
+                    iconCode = JSONWeather.getString("icon");
 
                     currentTemperature = JSONTemperature.getInt("temp") - 273;
 
 
                 }
+                iconURL = "http://openweathermap.org/img/w/" + iconCode + ".png";
+
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
