@@ -210,7 +210,7 @@ public class CameraFragment extends Fragment
     private CaptureRequest.Builder mPreviewRequestBuilder;
 
     private CaptureRequest mPreviewRequest;
-    
+
     private Semaphore mCameraOpenCloseLock = new Semaphore(1);
 
     private Double motionUp;
@@ -360,7 +360,6 @@ public class CameraFragment extends Fragment
         task.execute("");
 
 
-
     }
 
     private void showToast(final String text) {
@@ -446,7 +445,6 @@ public class CameraFragment extends Fragment
     public static CameraFragment newInstance() {
         return new CameraFragment();
     }
-
 
 
     @Override
@@ -921,7 +919,6 @@ public class CameraFragment extends Fragment
             case R.id.picture: {
 
 
-
                 getLastLocation();
                 currentGeofence(mLastLocation);
                 Calendar c = Calendar.getInstance();
@@ -997,54 +994,63 @@ public class CameraFragment extends Fragment
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER && false) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 
-            long curTime = System.currentTimeMillis();
+            yTilt = event.values[1];
+            if (false) {
 
-            if ((curTime - lastUpdate) > 500) {
+                long curTime = System.currentTimeMillis();
 
-                lastUpdate = curTime;
+                if ((curTime - lastUpdate) > 500) {
 
-                yTilt = event.values[1];
+                    lastUpdate = curTime;
 
-                float x = event.values[0];
-                float y = event.values[1];
-                float z = event.values[2];
 
-                if (!mInitialized) {
-                    mLastX = x;
-                    mLastY = y;
-                    mLastZ = z;
-                    mInitialized = true;
+                    float x = event.values[0];
+                    float y = event.values[1];
+                    float z = event.values[2];
 
-                } else {
-                    float deltaX = Math.abs(mLastX - x);
-                    float deltaY = Math.abs(mLastY - y);
-                    float deltaZ = Math.abs(mLastZ - z);
-                    if (deltaX < Sensitivity) deltaX = (float) 0.0;
-                    if (deltaY < Sensitivity) deltaY = (float) 0.0;
+                    if (!mInitialized) {
+                        mLastX = x;
+                        mLastY = y;
+                        mLastZ = z;
+                        mInitialized = true;
 
-                    mLastX = x;
-                    mLastY = y;
-                    mLastZ = z;
+                    } else {
+                        float deltaX = Math.abs(mLastX - x);
+                        float deltaY = Math.abs(mLastY - y);
+                        float deltaZ = Math.abs(mLastZ - z);
+                        if (deltaX < Sensitivity) deltaX = (float) 0.0;
+                        if (deltaY < Sensitivity) deltaY = (float) 0.0;
 
-                    if (deltaX > deltaY) {
-                        button.setText("Sepia");
-                        selectedfilter = 4;
-                        newFilter();
+                        mLastX = x;
+                        mLastY = y;
+                        mLastZ = z;
 
-                    } else if (deltaY > deltaX) {
-                        button.setText("Negative");
-                        selectedfilter = 2;
-                        newFilter();
+                        if (deltaX > deltaY) {
+                            button.setText("Sepia");
+                            selectedfilter = 4;
+                            newFilter();
+
+                        } else if (deltaY > deltaX) {
+                            button.setText("Negative");
+                            selectedfilter = 2;
+                            newFilter();
+                        }
+
                     }
-
                 }
             }
         } else if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
 
             if (event.values[0] == 0) {
-                frontCamera = !frontCamera;
+                if(selectedfilter == 0) {
+                    selectedfilter = 2;
+                } else if(selectedfilter == 2) {
+                    selectedfilter = 4;
+                } else {
+                    selectedfilter = 0;
+                }
 
                 resetCamera();
 
@@ -1056,41 +1062,42 @@ public class CameraFragment extends Fragment
 
         } else if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
 
-            if(motionUp != 0) {
+            if (motionUp != 0) {
                 counter++;
             }
-            if(event.values[1] < -0.5 && event.values[1] > -5 && event.values[2] > 0.5) {
+            if (event.values[1] < -0.5 && event.values[1] > -5 && event.values[2] > 0.4) {
                 motionUp = motionUp + event.values[1] - event.values[2];
 
-            } else if(event.values[1] > 0.5) {
+            } else if (event.values[1] > 0.5) {
                 motionDown = motionDown + event.values[1];
             }
 
-            if(counter >= 15) {
+            if (counter >= 15) {
                 counter = 0;
-                if (!selfie && motionUp < -15) {
+                if (!selfie && motionUp < -13) {
                     frontCamera = true;
                     resetCamera();
                     selfie = true;
 
-                } else if (selfie && motionDown > 15) {
-                    if (yTilt > - 5 && yTilt < 5){
+                } else if (selfie && motionDown > 10) {
+                    if (yTilt > -5 && yTilt < 5) {
                         frontCamera = false;
+
                     } else {
                         frontCamera = false;
                     }
                     resetCamera();
+                    Log.e(TAG, "Camera Reset");
                     selfie = false;
                 }
                 motionUp = 0.0;
                 motionDown = 0.0;
+                counter = 0;
 
             }
 
 
-
-
-            if(counter >= 15) {
+            if (counter >= 15) {
                 motionUp = 0.0;
                 motionDown = 0.0;
                 counter = 0;
@@ -1250,7 +1257,6 @@ public class CameraFragment extends Fragment
     }
 
 
-
     private class getWeather extends AsyncTask<String, Void, List<String[]>> {
 
         @Override
@@ -1263,7 +1269,7 @@ public class CameraFragment extends Fragment
                         "http://api.openweathermap.org/data/2.5/weather?q=Lund,SWE&APPID=3f601da80614d1a026bfbb9c72c15ab7");
                 tc = subredditURL.openConnection();
                 in = new BufferedReader(new InputStreamReader(tc
-                        .getInputStream()   ));
+                        .getInputStream()));
                 String line;
                 while ((line = in.readLine()) != null) {
 
@@ -1275,9 +1281,7 @@ public class CameraFragment extends Fragment
                     JSONObject JSONTemperature = object.getJSONObject("main");
 
 
-
                     currentTemperature = JSONTemperature.getInt("temp") - 273;
-
 
 
                 }
