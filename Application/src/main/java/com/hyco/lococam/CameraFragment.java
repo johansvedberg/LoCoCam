@@ -30,6 +30,7 @@ import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
+import android.hardware.camera2.params.Face;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.location.Address;
 import android.location.Geocoder;
@@ -56,15 +57,11 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
+
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.vision.CameraSource;
-import com.google.android.gms.vision.MultiProcessor;
-import com.google.android.gms.vision.Tracker;
-import com.google.android.gms.vision.face.Face;
-import com.google.android.gms.vision.face.FaceDetector;
 
 
 import org.json.JSONArray;
@@ -281,8 +278,14 @@ public class CameraFragment extends Fragment
         private void process(CaptureResult result) {
             switch (mState) {
                 case STATE_PREVIEW: {
-                    // We have nothing to do when the camera preview is working normally.
+                /*    Face face[] = result.get(CaptureResult.STATISTICS_FACES);
+                    if (face.length > 0) {
+                        Log.d(TAG, "face detected " + Integer.toString(face.length));
+
+                        takePicture();
+                    }*/
                     break;
+
                 }
                 case STATE_WAITING_LOCK: {
                     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
@@ -743,6 +746,7 @@ public class CameraFragment extends Fragment
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        Log.d(TAG, "OK att gå tillbaka");
     }
 
     private void createCameraPreviewSession() {
@@ -782,6 +786,7 @@ public class CameraFragment extends Fragment
                                 setAutoFlash(mPreviewRequestBuilder);
 
                                 mPreviewRequestBuilder.set(CaptureRequest.CONTROL_EFFECT_MODE, selectedfilter);
+                                mPreviewRequestBuilder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, 2);
 
                                 // Finally, we start displaying the camera preview.
                                 mPreviewRequest = mPreviewRequestBuilder.build();
@@ -838,6 +843,19 @@ public class CameraFragment extends Fragment
     }
 
     private void takePicture() {
+        getLastLocation();
+        currentGeofence(mLastLocation);
+        Calendar c = Calendar.getInstance();
+
+        if (c.get(Calendar.MONTH) < 9) {
+            filename = "IMG_" + String.valueOf(c.get(Calendar.YEAR)) + "0" + String.valueOf(c.get(Calendar.MONTH) + 1) + String.valueOf(c.get(Calendar.DAY_OF_MONTH) + "_" + String.valueOf(c.get(Calendar.HOUR_OF_DAY)) + String.valueOf(c.get(Calendar.MINUTE) + String.valueOf(c.get(Calendar.SECOND))));
+
+        } else {
+            filename = "IMG_" + String.valueOf(c.get(Calendar.YEAR)) + String.valueOf(c.get(Calendar.MONTH) + 1) + String.valueOf(c.get(Calendar.DAY_OF_MONTH) + "_" + String.valueOf(c.get(Calendar.HOUR_OF_DAY)) + String.valueOf(c.get(Calendar.MINUTE) + String.valueOf(c.get(Calendar.SECOND))));
+
+        }
+
+        mFile = new File(getActivity().getExternalFilesDir(null), filename + ".jpg");
         lockFocus();
     }
 
@@ -885,6 +903,7 @@ public class CameraFragment extends Fragment
                     mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(mImageReader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_EFFECT_MODE, selectedfilter);
+            captureBuilder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, 2);
 
             // FOR GEOTAGGING
             captureBuilder.set(CaptureRequest.JPEG_GPS_LOCATION, mLastLocation);
@@ -940,20 +959,6 @@ public class CameraFragment extends Fragment
         switch (view.getId()) {
             case R.id.picture: {
 
-
-                getLastLocation();
-                currentGeofence(mLastLocation);
-                Calendar c = Calendar.getInstance();
-
-                if (c.get(Calendar.MONTH) < 9) {
-                    filename = "IMG_" + String.valueOf(c.get(Calendar.YEAR)) + "0" + String.valueOf(c.get(Calendar.MONTH) + 1) + String.valueOf(c.get(Calendar.DAY_OF_MONTH) + "_" + String.valueOf(c.get(Calendar.HOUR_OF_DAY)) + String.valueOf(c.get(Calendar.MINUTE) + String.valueOf(c.get(Calendar.SECOND))));
-
-                } else {
-                    filename = "IMG_" + String.valueOf(c.get(Calendar.YEAR)) + String.valueOf(c.get(Calendar.MONTH) + 1) + String.valueOf(c.get(Calendar.DAY_OF_MONTH) + "_" + String.valueOf(c.get(Calendar.HOUR_OF_DAY)) + String.valueOf(c.get(Calendar.MINUTE) + String.valueOf(c.get(Calendar.SECOND))));
-
-                }
-
-                mFile = new File(getActivity().getExternalFilesDir(null), filename + ".jpg");
                 takePicture();
                 break;
             }
@@ -1066,9 +1071,9 @@ public class CameraFragment extends Fragment
         } else if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
 
             if (event.values[0] == 0) {
-                if(selectedfilter == 0) {
+                if (selectedfilter == 0) {
                     selectedfilter = 2;
-                } else if(selectedfilter == 2) {
+                } else if (selectedfilter == 2) {
                     selectedfilter = 4;
                 } else {
                     selectedfilter = 0;
