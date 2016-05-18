@@ -54,6 +54,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -230,6 +231,8 @@ public class CameraFragment extends Fragment
     private int counter;
     private float yTilt;
 
+    private ImageButton shutterButton;
+
 
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
 
@@ -353,7 +356,8 @@ public class CameraFragment extends Fragment
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         button = (Button) view.findViewById(R.id.filters);
-        view.findViewById(R.id.picture).setOnClickListener(this);
+        shutterButton = (ImageButton) view.findViewById(R.id.picture);
+        shutterButton.setOnClickListener(this);
         view.findViewById(R.id.filters).setOnClickListener(this);
         view.findViewById(R.id.swapcamera).setOnClickListener(this);
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
@@ -958,7 +962,6 @@ public class CameraFragment extends Fragment
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.picture: {
-
                 takePicture();
                 break;
             }
@@ -1324,5 +1327,7 @@ public class CameraFragment extends Fragment
             return null;
         }
     }
-
+    public void shutter(View view) {
+        takePicture();
+    }
 }

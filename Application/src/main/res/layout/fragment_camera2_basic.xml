@@ -31,11 +31,8 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_gravity="center"
-            android:text="@string/picture"
-            android:src="@drawable/shutterbutton_final"
-            android:scaleType="centerInside"
+            android:background="@drawable/shutter"
             android:layout_marginBottom="5dp"
-            android:background="@android:color/transparent"
             />
 
         <Button

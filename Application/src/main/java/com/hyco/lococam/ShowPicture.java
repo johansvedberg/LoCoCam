@@ -245,6 +245,8 @@ public class ShowPicture extends Activity {
 
                 e.printStackTrace();
             }
+
+
             imageView.setImage(ImageSource.bitmap(newBitmap));
             File mFile = new File(activity.getExternalFilesDir(null), filename + "(2).png");
             pnguri = Uri.parse(mFile.toURI().toString());

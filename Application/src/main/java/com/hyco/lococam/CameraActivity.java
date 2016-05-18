@@ -3,6 +3,7 @@ package com.hyco.lococam;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 
 public class CameraActivity extends Activity {
 
@@ -17,5 +18,6 @@ public class CameraActivity extends Activity {
                     .commit();
         }
     }
+
 
 }
