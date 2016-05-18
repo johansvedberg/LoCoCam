@@ -127,7 +127,7 @@ public class ShowPicture extends Activity {
             FileOutputStream out = null;
             try {
                 out = new FileOutputStream(mFile);
-                processedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                newBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
