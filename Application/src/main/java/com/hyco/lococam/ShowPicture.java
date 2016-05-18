@@ -169,7 +169,13 @@ public class ShowPicture extends Activity {
 
         @Override
         protected void onPostExecute(Bitmap bm) {
-            Bitmap bm2 = BitmapFactory.decodeResource(getResources(), R.drawable.shutterbutton_final);
+            Bitmap geoFilterbm;
+            if(currentGeofence == "IKDC") {
+                geoFilterbm = BitmapFactory.decodeResource(getResources(), R.drawable.ikdc_geofilter);
+            } else {
+                geoFilterbm = BitmapFactory.decodeResource(getResources(), R.drawable.lund_geofilter);
+            }
+
 
 
 
@@ -185,33 +191,55 @@ public class ShowPicture extends Activity {
 
                 newCanvas.drawBitmap(bm1, 0, 0, null);
 
-
+                int textsize = newCanvas.getHeight()/20;
                 Paint paintText = new Paint(Paint.ANTI_ALIAS_FLAG);
                 paintText.setColor(Color.WHITE);
-                paintText.setTextSize(300);
+                paintText.setTextSize(textsize);
                 paintText.setStyle(Paint.Style.FILL);
-                paintText.setShadowLayer(10f, 10f, 10f, Color.BLACK);
+                //paintText.setShadowLayer(10f, 10f, 10f, Color.BLACK);
 
                 Rect rectText = new Rect();
-
                 paintText.getTextBounds(info, 0, info.length(), rectText);
+
+                Bitmap transparentblack = BitmapFactory.decodeResource(getResources(), R.drawable.svart_transparent);
+                Bitmap solidBoxInfo = Bitmap.createScaledBitmap(transparentblack,rectText.width() + 2*textsize/3,
+                        rectText.height() + textsize/2, true);
+
+
+                //geofilter
+                int newHeightGeo = geoFilterbm.getHeight() * (newBitmap.getWidth()/2)/geoFilterbm.getWidth();
+                Bitmap geoFilterScaledbm = Bitmap.createScaledBitmap(geoFilterbm, newBitmap.getWidth()/2, newHeightGeo, true);
+                newCanvas.drawBitmap(geoFilterScaledbm, 0, newBitmap.getHeight() - geoFilterScaledbm.getHeight(), null);
+
+                //locationtextbox
+                newCanvas.drawBitmap(solidBoxInfo, 0, newBitmap.getHeight() - geoFilterScaledbm.getHeight() - textsize, null);
+
+                //locationtext
+
                 newCanvas.drawText(info,
-                        (newBitmap.getWidth() - rectText.width()) / 2, rectText.height() + 100, paintText);
+                       textsize/5, newBitmap.getHeight()-geoFilterScaledbm.getHeight(), paintText);
 
-
-                newCanvas.drawBitmap(bm2, (newBitmap.getWidth() - bm2.getWidth()) / 2, rectText.height() + 160, null);
 
 
                 Rect bounds = new Rect();
                 paintText.getTextBounds(info2, 0, info2.length(), bounds);
-                Bitmap weatherIcon = Bitmap.createScaledBitmap(bm3, 400, 400, true);
-                int x = ((newBitmap.getWidth() - bounds.width()) / 2);
-                int y = (newBitmap.getHeight() - bounds.height() - 100);
+                Bitmap solidBoxInfo2 = Bitmap.createScaledBitmap(transparentblack, bounds.width() + 2*textsize/3,
+                        bounds.height() + textsize/2, true);
 
-                newCanvas.drawText(info2, x, y, paintText);
 
-                newCanvas.drawBitmap(weatherIcon, (newBitmap.getWidth() - weatherIcon.getWidth()) / 2,
-                        newBitmap.getHeight() - bounds.height() - 800, null);
+                Bitmap weatherIcon = Bitmap.createScaledBitmap(bm3, 2*textsize, 2*textsize, true);
+
+
+                //solidBoxInfo2 draw
+                newCanvas.drawBitmap(solidBoxInfo2, newBitmap.getWidth() - solidBoxInfo2.getWidth(),
+                        newBitmap.getHeight()/5 - textsize - textsize/10, null);
+
+                //info2 draw
+                newCanvas.drawText(info2, newBitmap.getWidth() - bounds.width() - textsize/5
+                        , newBitmap.getHeight()/5, paintText);
+
+                newCanvas.drawBitmap(weatherIcon, newBitmap.getWidth() - solidBoxInfo2.getWidth() - weatherIcon.getWidth()/2,
+                        newBitmap.getHeight()/5 - weatherIcon.getHeight(), null);
 
             } catch (FileNotFoundException e) {
 
