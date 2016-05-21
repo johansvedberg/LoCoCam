@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.TextView;
 
@@ -83,6 +85,13 @@ public class ShowPicture extends Activity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               share(view);
+            }
+        });
 
         path = getIntent().getStringExtra("path");
         filename = getIntent().getStringExtra("filename");
