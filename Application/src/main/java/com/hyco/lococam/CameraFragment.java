@@ -39,6 +39,7 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
@@ -54,7 +55,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -231,7 +231,7 @@ public class CameraFragment extends Fragment
     private int counter;
     private float yTilt;
 
-    private ImageButton shutterButton;
+    private boolean detect = true;
 
 
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
@@ -281,12 +281,29 @@ public class CameraFragment extends Fragment
         private void process(CaptureResult result) {
             switch (mState) {
                 case STATE_PREVIEW: {
-                /*    Face face[] = result.get(CaptureResult.STATISTICS_FACES);
-                    if (face.length > 0) {
-                        Log.d(TAG, "face detected " + Integer.toString(face.length));
 
-                        takePicture();
-                    }*/
+
+                    if (detect) {
+                        Face face[] = result.get(CaptureResult.STATISTICS_FACES);
+                        if (face.length > 0) {
+                            Log.d(TAG, "face detected " + Integer.toString(face.length));
+                            detect = false;
+                            new CountDownTimer(3000, 1000) {
+
+                                public void onTick(long millisUntilFinished) {
+
+                                }
+
+                                public void onFinish() {
+                                    takePicture();
+                                    detect = true;
+
+                                }
+                            }.start();
+
+                        }
+
+                    }
                     break;
 
                 }
@@ -356,8 +373,7 @@ public class CameraFragment extends Fragment
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         button = (Button) view.findViewById(R.id.filters);
-        shutterButton = (ImageButton) view.findViewById(R.id.picture);
-        shutterButton.setOnClickListener(this);
+        view.findViewById(R.id.picture).setOnClickListener(this);
         view.findViewById(R.id.filters).setOnClickListener(this);
         view.findViewById(R.id.swapcamera).setOnClickListener(this);
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
@@ -376,8 +392,6 @@ public class CameraFragment extends Fragment
         //Facedetection stuff
 
 
-
-
         if (!canAccessLocation()) {
             requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
         }
@@ -387,8 +401,6 @@ public class CameraFragment extends Fragment
 
 
     }
-
-
 
 
     private void showToast(final String text) {
@@ -487,9 +499,9 @@ public class CameraFragment extends Fragment
     public void onResume() {
         super.onResume();
 
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
-        mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_UI);
-        mSensorManager.registerListener(this, mLinearMotion, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mLinearMotion, SensorManager.SENSOR_DELAY_NORMAL);
 
         startBackgroundThread();
 
@@ -962,6 +974,7 @@ public class CameraFragment extends Fragment
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.picture: {
+
                 takePicture();
                 break;
             }
@@ -1096,7 +1109,7 @@ public class CameraFragment extends Fragment
                 counter++;
             }
             if (event.values[1] < -0.5 && event.values[1] > -5 && event.values[2] > 0.4) {
-                motionUp = motionUp + event.values[1] - event.values[2];
+                motionUp = motionUp + event.values[1];
 
             } else if (event.values[1] > 0.5) {
                 motionDown = motionDown + event.values[1];
@@ -1104,7 +1117,7 @@ public class CameraFragment extends Fragment
 
             if (counter >= 15) {
                 counter = 0;
-                if (!selfie && motionUp < -13) {
+                if (!selfie && motionUp < -15) {
                     frontCamera = true;
                     resetCamera();
                     selfie = true;
@@ -1327,7 +1340,5 @@ public class CameraFragment extends Fragment
             return null;
         }
     }
-    public void shutter(View view) {
-        takePicture();
-    }
+
 }
