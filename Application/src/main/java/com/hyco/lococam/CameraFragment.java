@@ -55,6 +55,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -125,8 +126,6 @@ public class CameraFragment extends Fragment
 
     private static final int MAX_PREVIEW_HEIGHT = 1080;
 
-    private static final int RC_HANDLE_GMS = 9001;
-
 
     private final TextureView.SurfaceTextureListener mSurfaceTextureListener
             = new TextureView.SurfaceTextureListener() {
@@ -173,6 +172,8 @@ public class CameraFragment extends Fragment
     private int currentTemperature;
 
     private int selectedfilter = 0;
+
+    private int mode;
 
     private int sensor;
 
@@ -227,11 +228,14 @@ public class CameraFragment extends Fragment
     private Double motionUp;
     private Double motionDown;
 
+    private TextView countdown;
+
     private boolean selfie;
     private int counter;
     private float yTilt;
 
     private boolean detect = true;
+    private boolean up = true;
 
 
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
@@ -286,20 +290,14 @@ public class CameraFragment extends Fragment
                     if (detect) {
                         Face face[] = result.get(CaptureResult.STATISTICS_FACES);
                         if (face.length > 0) {
+
+
+                            taketimerpicture();
+
+
                             Log.d(TAG, "face detected " + Integer.toString(face.length));
                             detect = false;
-                            new CountDownTimer(3000, 1000) {
 
-                                public void onTick(long millisUntilFinished) {
-
-                                }
-
-                                public void onFinish() {
-                                    takePicture();
-                                    detect = true;
-
-                                }
-                            }.start();
 
                         }
 
@@ -377,6 +375,7 @@ public class CameraFragment extends Fragment
         view.findViewById(R.id.filters).setOnClickListener(this);
         view.findViewById(R.id.swapcamera).setOnClickListener(this);
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
+        countdown = (TextView) view.findViewById(R.id.countdown);
         mFrame = (FrameLayout) view.findViewById(R.id.control);
         mInitialized = false;
         mSensorManager = (SensorManager) this.getContext().getSystemService(Activity.SENSOR_SERVICE);
@@ -388,9 +387,6 @@ public class CameraFragment extends Fragment
         motionUp = 0.0;
         motionDown = 0.0;
         selfie = false;
-
-        //Facedetection stuff
-
 
         if (!canAccessLocation()) {
             requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
@@ -424,9 +420,16 @@ public class CameraFragment extends Fragment
             Location tempLocation = new Location("temporary location");
             tempLocation.setLatitude(latitude);
             tempLocation.setLongitude(longitude);
-            if (currentLocation.distanceTo(tempLocation) < 500) {
-                currentGeofence = entry.getKey();
+            if (currentLocation != null) {
+                if (currentLocation.distanceTo(tempLocation) < 500) {
+                    currentGeofence = entry.getKey();
+                } else {
+                    currentGeofence = "N/A";
+                }
+
             }
+
+
         }
 
         if (currentGeofence == null) {
@@ -763,6 +766,7 @@ public class CameraFragment extends Fragment
             e.printStackTrace();
         }
         Log.d(TAG, "OK att gå tillbaka");
+        detect = true;
     }
 
     private void createCameraPreviewSession() {
@@ -802,7 +806,7 @@ public class CameraFragment extends Fragment
                                 setAutoFlash(mPreviewRequestBuilder);
 
                                 mPreviewRequestBuilder.set(CaptureRequest.CONTROL_EFFECT_MODE, selectedfilter);
-                                mPreviewRequestBuilder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, 2);
+                                mPreviewRequestBuilder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, mode);
 
                                 // Finally, we start displaying the camera preview.
                                 mPreviewRequest = mPreviewRequestBuilder.build();
@@ -857,6 +861,28 @@ public class CameraFragment extends Fragment
 
 
     }
+
+
+    private void taketimerpicture() {
+
+        showToast("Face deteted, 3 seconds to picture!");
+        new CountDownTimer(3000, 1000) {
+
+
+            public void onTick(long millisUntilFinished) {
+
+
+            }
+
+            public void onFinish() {
+
+                takePicture();
+
+
+            }
+        }.start();
+    }
+
 
     private void takePicture() {
         getLastLocation();
@@ -919,7 +945,7 @@ public class CameraFragment extends Fragment
                     mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
             captureBuilder.addTarget(mImageReader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_EFFECT_MODE, selectedfilter);
-            captureBuilder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, 2);
+            captureBuilder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, mode);
 
             // FOR GEOTAGGING
             captureBuilder.set(CaptureRequest.JPEG_GPS_LOCATION, mLastLocation);
@@ -968,6 +994,7 @@ public class CameraFragment extends Fragment
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
@@ -982,7 +1009,7 @@ public class CameraFragment extends Fragment
             case R.id.filters: {
 
                 final CharSequence[] items = {
-                        "Sepia", "Negative", "No filter"
+                        "Automatic", "Manual"
                 };
 
 
@@ -990,20 +1017,16 @@ public class CameraFragment extends Fragment
                 alertDialogBuilder.setItems(items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
                         String selectedText = items[item].toString();
-                        if (selectedText.equals("Sepia")) {
-                            selectedfilter = 4;
-                            button.setText("Sepia");
+                        if (selectedText.equals("Automatic")) {
+                            mode = 2;
+                            button.setText("Automatic");
                             newFilter();
 
-                        } else if (selectedText.equals("Negative")) {
-                            selectedfilter = 2;
-                            button.setText("Negative");
+                        } else if (selectedText.equals("Manual")) {
+                            mode = 0;
+                            button.setText("Manual");
                             newFilter();
 
-                        } else if (selectedText.equals("No filter")) {
-                            selectedfilter = 0;
-                            button.setText("No filter");
-                            newFilter();
                         }
                     }
                 });
@@ -1104,15 +1127,22 @@ public class CameraFragment extends Fragment
 
 
         } else if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
+            if(counter == 0 && event.values[1] < -0.5) {
+                up = true;
+                motionDown = 0.0;
 
+            } else if(selfie) {
+                up = false;
+            }
             if (motionUp != 0) {
                 counter++;
             }
-            if (event.values[1] < -0.5 && event.values[1] > -5 && event.values[2] > 0.4) {
-                motionUp = motionUp + event.values[1];
+            if (up && event.values[1] < -0.5 && event.values[1] > -5 && event.values[2] > 0.4) {
+                motionUp = motionUp + event.values[1] - event.values[2];
 
-            } else if (event.values[1] > 0.5) {
+            } else if (!up && event.values[1] > 0.5) {
                 motionDown = motionDown + event.values[1];
+                Log.e(TAG, "MOTION DOWN WTF");
             }
 
             if (counter >= 15) {
@@ -1121,6 +1151,8 @@ public class CameraFragment extends Fragment
                     frontCamera = true;
                     resetCamera();
                     selfie = true;
+                    Log.e(TAG, String.valueOf(motionUp));
+                    Log.e(TAG, String.valueOf(motionDown));
 
                 } else if (selfie && motionDown > 10) {
                     if (yTilt > -5 && yTilt < 5) {
@@ -1130,12 +1162,12 @@ public class CameraFragment extends Fragment
                         frontCamera = false;
                     }
                     resetCamera();
-                    Log.e(TAG, "Camera Reset");
+                    Log.e(TAG, "Camera Reset and motion down: " + String.valueOf(motionDown));
                     selfie = false;
+
                 }
                 motionUp = 0.0;
                 motionDown = 0.0;
-                counter = 0;
 
             }
 
