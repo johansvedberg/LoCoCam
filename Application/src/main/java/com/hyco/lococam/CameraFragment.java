@@ -287,7 +287,7 @@ public class CameraFragment extends Fragment
                 case STATE_PREVIEW: {
 
 
-                    if (detect) {
+                    if (detect && mode == 2) {
                         Face face[] = result.get(CaptureResult.STATISTICS_FACES);
                         if (face.length > 0) {
 
@@ -423,32 +423,34 @@ public class CameraFragment extends Fragment
             if (currentLocation != null) {
                 if (currentLocation.distanceTo(tempLocation) < 500) {
                     currentGeofence = entry.getKey();
-                } else {
-                    currentGeofence = "N/A";
                 }
 
-            }
+                if (currentGeofence == null) {
+                    Geocoder geocoder = new Geocoder(activity, Locale.getDefault());
+                    double latitude2 = currentLocation.getLatitude();
+                    double longitude2 = currentLocation.getLongitude();
+                    List<Address> addresses = null;
+                    try {
+                        addresses = geocoder.getFromLocation(latitude2, longitude2, 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (addresses.size() > 0) {
+                        currentGeofence = addresses.get(0).getLocality();
+                    } else {
+                        currentGeofence = "Location Error";
+                    }
 
+                }
 
-        }
-
-        if (currentGeofence == null) {
-            Geocoder geocoder = new Geocoder(activity, Locale.getDefault());
-            double latitude = currentLocation.getLatitude();
-            double longitude = currentLocation.getLongitude();
-            List<Address> addresses = null;
-            try {
-                addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (addresses.size() > 0) {
-                currentGeofence = addresses.get(0).getLocality();
             } else {
                 currentGeofence = "Location Error";
             }
 
+
         }
+
+
 
 
     }
