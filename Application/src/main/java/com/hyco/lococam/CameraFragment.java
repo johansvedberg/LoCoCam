@@ -12,6 +12,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -650,6 +652,7 @@ public class CameraFragment extends Fragment
                         Log.e(TAG, "Display rotation is invalid: " + displayRotation);
                 }
 
+
                 Point displaySize = new Point();
                 activity.getWindowManager().getDefaultDisplay().getSize(displaySize);
                 int rotatedPreviewWidth = width;
@@ -1220,6 +1223,7 @@ public class CameraFragment extends Fragment
         public ImageSaver(Image image, File file) {
             mImage = image;
             mFile = file;
+
 
 
         }
