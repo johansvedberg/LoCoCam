@@ -1142,11 +1142,8 @@ public class CameraFragment extends Fragment
                 up = true;
                 motionDown = 0.0;
 
-<<<<<<< Updated upstream
-            } else if (selfie) {
-=======
+
             } else if(frontCamera) {
->>>>>>> Stashed changes
                 up = false;
             }
             if (motionUp != 0) {
@@ -1165,11 +1162,6 @@ public class CameraFragment extends Fragment
                 if (!frontCamera && motionUp < -15) {
                     frontCamera = true;
                     resetCamera();
-<<<<<<< Updated upstream
-
-                    selfie = true;
-=======
->>>>>>> Stashed changes
                     Log.e(TAG, String.valueOf(motionUp));
                     Log.e(TAG, String.valueOf(motionDown));
 
