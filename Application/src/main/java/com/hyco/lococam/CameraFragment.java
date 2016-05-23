@@ -291,7 +291,7 @@ public class CameraFragment extends Fragment
                 case STATE_PREVIEW: {
 
 
-                    if (detect && mode == 2) {
+                    if (detect && mode == 2 && frontCamera) {
 
                         Face face[] = result.get(CaptureResult.STATISTICS_FACES);
 
@@ -389,7 +389,7 @@ public class CameraFragment extends Fragment
         mInitialized = false;
         mSensorManager = (SensorManager) this.getContext().getSystemService(Activity.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mTemperature = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        // mTemperature = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         mProximity = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
         mLinearMotion = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
@@ -510,6 +510,9 @@ public class CameraFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
+
+        mode = 0;
+        button.setText("Manual");
 
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(this, mProximity, SensorManager.SENSOR_DELAY_NORMAL);
@@ -1143,7 +1146,7 @@ public class CameraFragment extends Fragment
                 motionDown = 0.0;
 
 
-            } else if(frontCamera) {
+            } else if (frontCamera) {
                 up = false;
             }
             if (motionUp != 0) {
@@ -1161,6 +1164,16 @@ public class CameraFragment extends Fragment
                 counter = 0;
                 if (!frontCamera && motionUp < -15) {
                     frontCamera = true;
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            countdown.setVisibility(View.INVISIBLE);
+
+                        }
+                    }, 1000);
+
+                    countdown.setVisibility(View.VISIBLE);
                     resetCamera();
                     Log.e(TAG, String.valueOf(motionUp));
                     Log.e(TAG, String.valueOf(motionDown));
@@ -1173,6 +1186,16 @@ public class CameraFragment extends Fragment
                         frontCamera = false;
                     }
                     Log.e(TAG, "Camera Reset and motion down: " + String.valueOf(motionDown));
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            countdown.setVisibility(View.INVISIBLE);
+
+                        }
+                    }, 1000);
+
+                    countdown.setVisibility(View.VISIBLE);
                     resetCamera();
 
                 }
@@ -1204,17 +1227,6 @@ public class CameraFragment extends Fragment
             mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
         }
 
-
-        /*Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                countdown.setVisibility(View.INVISIBLE);
-
-            }
-        }, 500);
-
-        countdown.setVisibility(View.VISIBLE);*/
 
     }
 
