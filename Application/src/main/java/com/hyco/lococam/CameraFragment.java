@@ -1142,7 +1142,11 @@ public class CameraFragment extends Fragment
                 up = true;
                 motionDown = 0.0;
 
+<<<<<<< Updated upstream
             } else if (selfie) {
+=======
+            } else if(frontCamera) {
+>>>>>>> Stashed changes
                 up = false;
             }
             if (motionUp != 0) {
@@ -1158,24 +1162,26 @@ public class CameraFragment extends Fragment
 
             if (counter >= 15) {
                 counter = 0;
-                if (!selfie && motionUp < -15) {
+                if (!frontCamera && motionUp < -15) {
                     frontCamera = true;
                     resetCamera();
+<<<<<<< Updated upstream
 
                     selfie = true;
+=======
+>>>>>>> Stashed changes
                     Log.e(TAG, String.valueOf(motionUp));
                     Log.e(TAG, String.valueOf(motionDown));
 
-                } else if (selfie && motionDown > 10) {
+                } else if (frontCamera && motionDown > 10) {
                     if (yTilt > -5 && yTilt < 5) {
                         frontCamera = false;
 
                     } else {
                         frontCamera = false;
                     }
-                    resetCamera();
                     Log.e(TAG, "Camera Reset and motion down: " + String.valueOf(motionDown));
-                    selfie = false;
+                    resetCamera();
 
                 }
                 motionUp = 0.0;
