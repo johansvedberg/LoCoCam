@@ -79,13 +79,13 @@
 
 
 
-    <TextView
+    <ImageView
         android:id="@+id/countdown"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/container"
-        android:textSize="200dp"
-        android:textColor="@android:color/white"
+        android:src="@drawable/switchcamera"
+        android:layout_centerInParent="true"
         />
 
 </RelativeLayout>

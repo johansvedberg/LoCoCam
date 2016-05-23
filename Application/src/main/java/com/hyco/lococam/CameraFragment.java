@@ -57,6 +57,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -111,6 +112,7 @@ public class CameraFragment extends Fragment
         ORIENTATIONS.append(Surface.ROTATION_180, 270);
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
+
 
     private static final String TAG = "CameraFragment";
 
@@ -230,7 +232,7 @@ public class CameraFragment extends Fragment
     private Double motionUp;
     private Double motionDown;
 
-    private TextView countdown;
+    private ImageView countdown;
 
     private boolean selfie;
     private int counter;
@@ -290,7 +292,10 @@ public class CameraFragment extends Fragment
 
 
                     if (detect && mode == 2) {
+
                         Face face[] = result.get(CaptureResult.STATISTICS_FACES);
+
+
                         if (face.length > 0) {
 
 
@@ -304,6 +309,7 @@ public class CameraFragment extends Fragment
                         }
 
                     }
+
                     break;
 
                 }
@@ -377,7 +383,8 @@ public class CameraFragment extends Fragment
         view.findViewById(R.id.filters).setOnClickListener(this);
         view.findViewById(R.id.swapcamera).setOnClickListener(this);
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
-        countdown = (TextView) view.findViewById(R.id.countdown);
+        countdown = (ImageView) view.findViewById(R.id.countdown);
+        countdown.setVisibility(View.GONE);
         mFrame = (FrameLayout) view.findViewById(R.id.control);
         mInitialized = false;
         mSensorManager = (SensorManager) this.getContext().getSystemService(Activity.SENSOR_SERVICE);
@@ -451,8 +458,6 @@ public class CameraFragment extends Fragment
 
 
         }
-
-
 
 
     }
@@ -978,6 +983,7 @@ public class CameraFragment extends Fragment
 
             mCaptureSession.stopRepeating();
             mCaptureSession.capture(captureBuilder.build(), CaptureCallback, null);
+            unlockFocus();
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -1132,11 +1138,11 @@ public class CameraFragment extends Fragment
 
 
         } else if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) {
-            if(counter == 0 && event.values[1] < -0.5) {
+            if (counter == 0 && event.values[1] < -0.5) {
                 up = true;
                 motionDown = 0.0;
 
-            } else if(selfie) {
+            } else if (selfie) {
                 up = false;
             }
             if (motionUp != 0) {
@@ -1155,6 +1161,7 @@ public class CameraFragment extends Fragment
                 if (!selfie && motionUp < -15) {
                     frontCamera = true;
                     resetCamera();
+
                     selfie = true;
                     Log.e(TAG, String.valueOf(motionUp));
                     Log.e(TAG, String.valueOf(motionDown));
@@ -1200,6 +1207,17 @@ public class CameraFragment extends Fragment
         }
 
 
+        /*Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                countdown.setVisibility(View.INVISIBLE);
+
+            }
+        }, 500);
+
+        countdown.setVisibility(View.VISIBLE);*/
+
     }
 
     private void newFilter() {
@@ -1223,7 +1241,6 @@ public class CameraFragment extends Fragment
         public ImageSaver(Image image, File file) {
             mImage = image;
             mFile = file;
-
 
 
         }
