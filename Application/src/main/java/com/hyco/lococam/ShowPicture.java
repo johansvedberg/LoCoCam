@@ -202,7 +202,7 @@ public class ShowPicture extends Activity {
         @Override
         protected void onPostExecute(Bitmap bm) {
             Bitmap geoFilterbm;
-            if(currentGeofence == "IKDC") {
+            if(currentGeofence.equals("IKDC")) {
                 geoFilterbm = BitmapFactory.decodeResource(getResources(), R.drawable.ikdc_geofilter);
             } else {
                 geoFilterbm = BitmapFactory.decodeResource(getResources(), R.drawable.lund_geofilter);
